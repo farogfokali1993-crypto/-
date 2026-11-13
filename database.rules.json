@@ -1,0 +1,23 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "publicChatMessages": {
+      ".read": true,
+      ".indexOn": ["createdAt"],
+      "$messageId": {
+        ".write": "auth != null && !data.exists()",
+        ".validate": "newData.hasChildren(['uid', 'name', 'createdAt']) && newData.child('uid').val() == auth.uid && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 32 && newData.child('createdAt').isNumber() && ((newData.child('text').isString() && newData.child('text').val().length > 0 && newData.child('text').val().length <= 500) || (newData.child('audioPath').isString() && newData.child('audioPath').val().beginsWith('publicChatVoice/' + auth.uid + '/') && newData.child('durationMs').isNumber() && newData.child('durationMs').val() > 0 && newData.child('durationMs').val() <= 300000))"
+      }
+    },
+    "publicChatPresence": {
+      ".read": "auth != null",
+      "$uid": {
+        "$connectionId": {
+          ".write": "auth != null && auth.uid == $uid",
+          ".validate": "newData.isNumber()"
+        }
+      }
+    }
+  }
+}

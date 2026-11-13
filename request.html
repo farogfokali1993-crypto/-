@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>استمارة طلب | اتحاد نقابة العاملين بالنقل والسياحة وخدماتها في العراق</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+  <style>
+    :root {
+      color-scheme: light;
+      --bar: #ffc400;
+      --bar-ink: #1c1a14;
+      --bg: #fff;
+      --surface: #fff;
+      --fg: #1c1a14;
+      --muted: #5d5a4c;
+      --line: #e4e1d5;
+      --font: "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scrollbar-width: none; -ms-overflow-style: none; }
+    html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+    body {
+      min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+      margin: 0; background: var(--bg); color: var(--fg);
+      font: 18px/1.7 var(--font);
+    }
+    a { color: inherit; }
+    .request-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      min-height: 64px; padding: 10px max(20px, env(safe-area-inset-right, 0px)) 10px max(20px, env(safe-area-inset-left, 0px));
+      background: linear-gradient(110deg, #f2ba19 0%, #ffd242 48%, #f5bf22 100%);
+      box-shadow: 0 3px 12px rgba(28,26,20,.12);
+    }
+    .request-header strong { font-size: 17px; }
+    .back-link {
+      padding: 7px 12px; border: 1px solid rgba(28,26,20,.18); border-radius: 10px;
+      background: rgba(255,255,255,.48); font-size: 14px; font-weight: 700; text-decoration: none;
+    }
+    main { flex: 1; display: flex; justify-content: center; padding: 28px 16px 48px; }
+    .request-card {
+      width: min(760px, 100%); align-self: flex-start; padding: clamp(20px, 4vw, 36px);
+      border: 0; border-radius: 0; background: transparent; box-shadow: none;
+    }
+    h1 { margin: 0; font-size: clamp(25px, 5vw, 34px); line-height: 1.4; }
+    .intro { margin: 6px 0 18px; color: var(--muted); font-size: 16px; }
+    .stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0 0 22px; padding: 0; list-style: none; }
+    .stepper li {
+      display: flex; align-items: center; gap: 7px; min-width: 0; padding: 9px 10px;
+      border: 1px solid var(--line); border-radius: 12px; color: var(--muted); font-size: 13px; font-weight: 700;
+      background: #fbfaf7; transition: background .2s, border-color .2s, color .2s;
+    }
+    .stepper li span:first-child {
+      width: 25px; height: 25px; flex: none; display: grid; place-items: center; border-radius: 50%;
+      background: #eeece5; color: var(--muted); font-size: 12px;
+    }
+    .stepper li.is-current, .stepper li.is-complete { border-color: #e7bd30; background: rgba(255,196,0,.12); color: var(--fg); }
+    .stepper li.is-current span:first-child, .stepper li.is-complete span:first-child { background: var(--bar); color: var(--bar-ink); }
+    .step-panel { min-height: 270px; }
+    .step-panel h2 { margin: 0 0 16px; font-size: 21px; }
+    .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    label { min-width: 0; display: grid; align-content: start; gap: 8px; font-size: 17px; font-weight: 700; }
+    label.field-wide { grid-column: 1 / -1; }
+    input, select, textarea {
+      width: 100%; min-height: 58px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 11px;
+      background: var(--bg); color: var(--fg); font: 400 18px/1.5 var(--font);
+    }
+    input[type="file"] { min-height: 58px; padding: 9px; font-size: 16px; }
+    input[type="file"]::file-selector-button {
+      min-height: 38px; margin-inline-end: 8px; padding: 5px 12px; border: 0; border-radius: 8px;
+      background: rgba(255,196,0,.22); color: var(--bar-ink); font: 700 15px var(--font);
+    }
+    input[dir="ltr"] { text-align: left; }
+    textarea { min-height: 170px; resize: vertical; }
+    label small, .step-hint { color: var(--muted); font-size: 13px; font-weight: 400; }
+    .file-status { min-height: 20px; overflow-wrap: anywhere; }
+    .vehicle-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .step-controls { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+    .step-button {
+      min-height: 48px; padding: 8px 22px; border: 1px solid var(--line); border-radius: 12px;
+      background: var(--surface); color: var(--fg); font: 700 16px var(--font); cursor: pointer;
+    }
+    .step-button.primary { margin-inline-start: auto; border-color: var(--bar); background: var(--bar); }
+    .step-button:disabled { cursor: not-allowed; opacity: .58; }
+    .step-button:focus-visible, :focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    .mode-chip { display: inline-flex; margin-bottom: 10px; padding: 3px 10px; border-radius: 999px; background: rgba(255,196,0,.16); font-size: 13px; font-weight: 700; }
+    .receipt-card { margin-top: 20px; padding-top: 24px; border-top: 4px solid var(--bar); }
+    .receipt-card h2 { margin: 0 0 8px; font-size: clamp(23px, 5vw, 30px); }
+    .receipt-brand { display: flex; justify-content: center; margin: 8px 0 18px; }
+    .receipt-logo { display: block; width: min(120px, 30vw); height: auto; }
+    .receipt-number {
+      display: grid; gap: 2px; margin: 18px 0; padding: 15px 18px;
+      border-radius: 14px; background: linear-gradient(110deg, #fff4bf, #fffaf0);
+    }
+    .receipt-number span, .receipt-row dt { color: var(--muted); font-size: 14px; }
+    .receipt-number strong { direction: ltr; text-align: right; font-size: clamp(28px, 7vw, 40px); line-height: 1.3; }
+    .receipt-rows { display: grid; gap: 0; margin: 0; }
+    .receipt-row { padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfaf7; }
+    .receipt-row dt { font-size: 17px; }
+    .receipt-row dd { margin: 6px 0 0; overflow-wrap: anywhere; font-size: 20px; font-weight: 700; }
+    .receipt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .receipt-actions button {
+      min-height: 46px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 11px;
+      background: var(--surface); color: var(--fg); font: 700 15px var(--font); cursor: pointer;
+    }
+    .receipt-actions .primary { border-color: var(--bar); background: var(--bar); }
+    .receipt-actions button:disabled { cursor: wait; opacity: .62; }
+    .receipt-help, .receipt-status { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+    @media (max-width: 420px) {
+      .request-header strong { font-size: 15px; }
+      .back-link { padding-inline: 9px; font-size: 13px; }
+      .stepper { gap: 4px; }
+      .stepper li { flex-direction: column; justify-content: center; gap: 3px; padding: 6px 3px; font-size: 11px; }
+      .fields, .vehicle-fields { grid-template-columns: 1fr; }
+      label.field-wide { grid-column: auto; }
+      .step-panel { min-height: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="request-header">
+    <strong>اتحاد نقابة العاملين بالنقل والسياحة وخدماتها في العراق</strong>
+    <a class="back-link" href="index.html#home">العودة للموقع</a>
+  </header>
+  <main>
+    <section class="request-card" aria-labelledby="request-title">
+      <span class="mode-chip" id="mode-chip">بوابة الطلبات</span>
+      <h1 id="request-title">تقديم طلب</h1>
+      <p class="intro" id="form-intro">أكمل الخطوات التالية لتجهيز معاملتك</p>
+      <ol class="stepper" aria-label="خطوات الاستمارة">
+        <li class="is-current" data-step-indicator="0"><span>1</span><span>الأساسية</span></li>
+        <li data-step-indicator="1"><span>2</span><span>القطاع</span></li>
+        <li data-step-indicator="2"><span>3</span><span>التصنيف</span></li>
+        <li data-step-indicator="3"><span>4</span><span>التفاصيل</span></li>
+      </ol>
+      <form id="transaction-form" novalidate>
+        <section class="step-panel" data-step-panel="0" aria-labelledby="step-title-1">
+          <h2 id="step-title-1">البيانات الأساسية</h2>
+          <div class="fields">
+            <label>رقم الاستمارة (إجباري)
+              <input type="text" name="formNumber" inputmode="numeric" dir="ltr" minlength="6" maxlength="6" pattern="[0-9]{6}" title="يرجى إدخال رقم مكوّن من 6 أرقام." autocomplete="off" required>
+            </label>
+            <label>المحافظة (إجباري)
+              <select name="governorate" required>
+                <option value="" selected disabled>اختر المحافظة</option>
+                <option>بغداد</option><option>البصرة</option><option>نينوى</option><option>أربيل</option>
+                <option>السليمانية</option><option>دهوك</option><option>كركوك</option><option>صلاح الدين</option>
+                <option>ديالى</option><option>الأنبار</option><option>بابل</option><option>كربلاء</option>
+                <option>النجف</option><option>القادسية</option><option>المثنى</option><option>ذي قار</option>
+                <option>ميسان</option><option>واسط</option><option>حلبجة</option>
+              </select>
+            </label>
+            <label class="field-wide">الاسم الثلاثي واللقب (إجباري)
+              <input type="text" name="fullName" autocomplete="name" required>
+            </label>
+            <label class="field-wide">رقم الهاتف (واتساب) (إجباري)
+              <input type="tel" name="phone" autocomplete="tel" inputmode="tel" dir="ltr" placeholder="07XXXXXXXXX" required>
+            </label>
+          </div>
+        </section>
+        <section class="step-panel" data-step-panel="1" aria-labelledby="step-title-2" hidden>
+          <h2 id="step-title-2">تصنيف القطاع / نوع المركبة</h2>
+          <div class="fields">
+            <label class="field-wide" data-mode="request">فئة المركبة أو الطلب الشخصي (إجباري)
+              <select name="sector" required>
+                <option value="" selected disabled>اختر الفئة</option>
+                <optgroup label="اللوريات والشاحنات (نقل البضائع)">
+                  <option value="trailer">تريلة</option><option value="tipper">قلاب</option>
+                  <option value="refrigerated">براد</option><option value="heavy-truck">حمل ثقيل</option>
+                </optgroup>
+                <optgroup label="التكسي (نقل الركاب العمومي)"><option value="taxi">سيارة أجرة صالون</option></optgroup>
+                <optgroup label="النقل الجماعي">
+                  <option value="bus">باص</option><option value="coaster">كوستر</option><option value="route-bus">حافلة خطوط</option>
+                </optgroup>
+                <optgroup label="النقل الخفيف والتوصيل">
+                  <option value="delivery-bike">دراجة دلفري</option><option value="tuk-tuk">تكتك</option>
+                </optgroup>
+                <optgroup label="الآليات الإنشائية والتخصصية">
+                  <option value="excavator">حفارة</option><option value="crane">رافعة (كرين)</option>
+                  <option value="loader">شفل</option><option value="heavy-machinery">آليات ثقيلة</option>
+                </optgroup>
+                <option value="personal">طلب شخصي (إداري)</option>
+              </select>
+            </label>
+            <label class="field-wide" data-mode="complaint" hidden>فئة المركبة المتضررة أو الشكوى الشخصية (إجباري)
+              <select name="sector" required disabled>
+                <option value="" selected disabled>اختر الفئة</option>
+                <option value="trucks">لوريات وشاحنات</option><option value="taxi">التكسي (الأجرة)</option>
+                <option value="buses">باصات وكوسترات</option><option value="heavy-machinery">آليات ثقيلة</option>
+                <option value="delivery-bike">دراجة دلفري</option><option value="tuk-tuk">تكتك</option>
+                <option value="personal">شكوى شخصية (إدارية)</option>
+              </select>
+            </label>
+            <p class="step-hint field-wide">إذا اخترت معاملة شخصية، لن تظهر حقول بيانات المركبة في الخطوة الأخيرة.</p>
+          </div>
+        </section>
+        <section class="step-panel" data-step-panel="2" aria-labelledby="category-heading" hidden>
+          <h2 id="category-heading">تصنيف نوع المعاملة</h2>
+          <div class="fields">
+            <label class="field-wide" data-mode="request">الجهة أو نوع الطلب (إجباري)
+              <select name="requestCategory" required>
+                <option value="" selected disabled>اختر موضوع الطلب</option>
+                <optgroup label="طلبات المرور">
+                  <option>كتاب تأييد سنوية</option><option>تحويل ملكية</option>
+                  <option>إجازة سوق عمومي</option><option>رفع حجز أو إشارة</option>
+                </optgroup>
+                <optgroup label="طلبات النقل والخطوط">
+                  <option>طلب خط عمل</option><option>نقل خط</option>
+                  <option>تصريح دخول كراج</option><option>تجديد باج نقل</option>
+                </optgroup>
+                <optgroup label="طلبات الشارع والطرق الخارجية">
+                  <option>تصريح مرور حمولات</option><option>موافقة عمل في مشاريع أو طرق خارجية</option>
+                </optgroup>
+                <optgroup label="طلبات شخصية وإدارية داخل الاتحاد">
+                  <option>انتساب جديد</option><option>تجديد هوية الاتحاد</option>
+                  <option>نقل قيد من محافظة لأخرى</option><option>بدل تالف أو ضائع لهوية الاتحاد</option>
+                  <option>طلب مساعدة أو استثناء</option>
+                </optgroup>
+              </select>
+            </label>
+            <label class="field-wide" data-mode="complaint" hidden>موضوع الشكوى (إجباري)
+              <select name="requestCategory" required disabled>
+                <option value="" selected disabled>اختر موضوع الشكوى</option>
+                <optgroup label="شكاوى المرور">
+                  <option>غرامات غير صحيحة</option><option>حجز مركبة</option>
+                  <option>تعقيد معاملات في دوائر المرور</option>
+                </optgroup>
+                <optgroup label="شكاوى النقل والخطوط">
+                  <option>تجاوز سائقين آخرين على الخط</option><option>مشاكل داخل الكراجات</option>
+                  <option>مخالفات التسعيرة</option><option>تعسف مسؤولي الخطوط</option>
+                </optgroup>
+                <optgroup label="شكاوى الشارع والسيطرات">
+                  <option>عرقلة السير في السيطرات الخارجية</option><option>مشاكل الموازين (القبان)</option>
+                  <option>جباية أو رسوم غير قانونية في الطرق</option><option>اعتداء أو تجاوز في الشارع</option>
+                </optgroup>
+                <optgroup label="شكاوى شخصية وإدارية داخل الاتحاد">
+                  <option>شكوى على موظف أو مكتب فرعي تابع للاتحاد</option>
+                  <option>تأخير معاملة</option><option>تظلم شخصي</option>
+                </optgroup>
+              </select>
+            </label>
+          </div>
+        </section>
+        <section class="step-panel" data-step-panel="3" aria-labelledby="step-title-4" hidden>
+          <h2 id="step-title-4">بيانات المركبة والتفاصيل</h2>
+          <div class="vehicle-fields" data-vehicle-fields hidden>
+            <label>رقم اللوحة
+              <input type="text" name="plateNumber" autocomplete="off">
+            </label>
+            <label>محافظة اللوحة
+              <select name="plateGovernorate">
+                <option value="" selected>اختر المحافظة</option>
+                <option>بغداد</option><option>البصرة</option><option>نينوى</option><option>أربيل</option>
+                <option>السليمانية</option><option>دهوك</option><option>كركوك</option><option>صلاح الدين</option>
+                <option>ديالى</option><option>الأنبار</option><option>بابل</option><option>كربلاء</option>
+                <option>النجف</option><option>القادسية</option><option>المثنى</option><option>ذي قار</option>
+                <option>ميسان</option><option>واسط</option><option>حلبجة</option>
+              </select>
+            </label>
+          </div>
+          <div class="fields">
+            <label class="field-wide" data-mode="complaint" hidden>مكان الحادثة أو المشكلة (إن وجد)
+              <input type="text" name="incidentPlace" placeholder="مثال: اسم السيطرة أو الكراج">
+            </label>
+            <label data-mode="complaint" hidden>تاريخ الحادثة (إن وجد)
+              <input type="date" name="incidentDate">
+            </label>
+            <label class="field-wide"><span id="details-label">نص الطلب (إجباري)</span>
+              <textarea name="requestDetails" rows="4" required placeholder="اكتب تفاصيل معاملتك بوضوح"></textarea>
+            </label>
+            <label class="field-wide">صورة الاستمارة (إجباري)
+              <input class="image-input" type="file" name="formPhoto" accept="image/*" required>
+              <small>تُجهّز الصورة وتُضغط على جهازك قبل إعداد المعاينة.</small>
+              <small class="file-status" aria-live="polite"></small>
+            </label>
+            <label class="field-wide" data-mode="request">صورة السنوية أو الهوية (اختياري)
+              <input class="image-input" type="file" name="identityPhoto" accept="image/*">
+              <small class="file-status" aria-live="polite"></small>
+            </label>
+            <label class="field-wide" data-mode="complaint" hidden>صور توثق الشكوى (اختياري)
+              <input class="image-input" type="file" name="evidencePhotos" accept="image/*" multiple disabled>
+              <small class="file-status" aria-live="polite"></small>
+            </label>
+          </div>
+        </section>
+        <div class="step-controls">
+          <button class="step-button" type="button" data-prev hidden>السابق</button>
+          <button class="step-button primary" type="button" data-next>التالي</button>
+          <button class="step-button primary" type="button" data-submit hidden>عرض المعاينة</button>
+        </div>
+      </form>
+      <section class="receipt-card" id="receipt-card" aria-labelledby="receipt-title" hidden>
+        <span class="mode-chip">معاينة محلية</span>
+        <h2 id="receipt-title">تم إعداد المعاينة</h2>
+        <div class="receipt-brand"><img class="receipt-logo" id="receipt-logo" src="images/الاتحاد.png" alt="شعار الاتحاد"></div>
+        <div class="receipt-number">
+          <span>رقم الاستمارة</span>
+          <strong id="receipt-number"></strong>
+        </div>
+        <dl class="receipt-rows" id="receipt-rows"></dl>
+        <div class="receipt-actions">
+          <button class="primary" type="button" id="save-receipt">حفظ صورة المعاينة</button>
+          <button type="button" id="edit-request">العودة إلى الاستمارة</button>
+        </div>
+        <p class="receipt-status" id="receipt-status" role="status" aria-live="polite"></p>
+      </section>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var mode = params.get('type') === 'complaint' ? 'complaint' : 'request';
+      var form = document.getElementById('transaction-form');
+      var panels = Array.prototype.slice.call(form.querySelectorAll('[data-step-panel]'));
+      var indicators = Array.prototype.slice.call(document.querySelectorAll('[data-step-indicator]'));
+      var modeFields = document.querySelectorAll('[data-mode]');
+      var title = document.getElementById('request-title');
+      var intro = document.getElementById('form-intro');
+      var chip = document.getElementById('mode-chip');
+      var categoryHeading = document.getElementById('category-heading');
+      var detailsLabel = document.getElementById('details-label');
+      var previousButton = form.querySelector('[data-prev]');
+      var nextButton = form.querySelector('[data-next]');
+      var submitButton = form.querySelector('[data-submit]');
+      var receiptCard = document.getElementById('receipt-card');
+      var receiptNumber = document.getElementById('receipt-number');
+      var receiptRows = document.getElementById('receipt-rows');
+      var receiptStatus = document.getElementById('receipt-status');
+      var saveReceiptButton = document.getElementById('save-receipt');
+      var editRequestButton = document.getElementById('edit-request');
+      var vehicleFields = form.querySelector('[data-vehicle-fields]');
+      var currentStep = 0;
+      var compressedFiles = Object.create(null);
+      var compressionTokens = Object.create(null);
+      var receiptData = null;
+      var formNumberInput = form.querySelector('[name="formNumber"]');
+
+      formNumberInput.addEventListener('input', function () {
+        var arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+        var persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+        formNumberInput.value = formNumberInput.value
+          .replace(/[٠-٩]/g, function (digit) { return String(arabicDigits.indexOf(digit)); })
+          .replace(/[۰-۹]/g, function (digit) { return String(persianDigits.indexOf(digit)); })
+          .replace(/[^0-9]/g, '')
+          .slice(0, 6);
+      });
+
+      title.textContent = mode === 'complaint' ? 'تقديم شكوى' : 'تقديم طلب';
+      document.title = (mode === 'complaint' ? 'استمارة شكوى' : 'استمارة طلب') + ' | اتحاد نقابة العاملين بالنقل والسياحة وخدماتها في العراق';
+      intro.textContent = mode === 'complaint'
+        ? 'أكمل الخطوات التالية لتوثيق الشكوى'
+        : 'أكمل الخطوات التالية لتجهيز معاملتك';
+      chip.textContent = mode === 'complaint' ? 'بوابة الشكاوى' : 'بوابة الطلبات';
+      categoryHeading.textContent = mode === 'complaint' ? 'تصنيف موضوع الشكوى' : 'تصنيف نوع المعاملة';
+      detailsLabel.textContent = mode === 'complaint' ? 'تفاصيل الشكوى (إجباري)' : 'نص الطلب (إجباري)';
+      submitButton.textContent = mode === 'complaint' ? 'عرض معاينة الشكوى' : 'عرض معاينة الطلب';
+      submitButton.disabled = true;
+
+      modeFields.forEach(function (field) {
+        var active = field.getAttribute('data-mode') === mode;
+        field.hidden = !active;
+        var control = field.querySelector('input, select, textarea');
+        if (control) control.disabled = !active;
+      });
+
+      function updateVehicleFields() {
+        var sectorSelect = form.querySelector('select[name="sector"]:not(:disabled)');
+        vehicleFields.hidden = !sectorSelect || sectorSelect.value === 'personal';
+      }
+
+      function showStep(index) {
+        currentStep = index;
+        panels.forEach(function (panel, panelIndex) {
+          panel.hidden = panelIndex !== currentStep;
+        });
+        indicators.forEach(function (indicator, indicatorIndex) {
+          indicator.classList.toggle('is-current', indicatorIndex === currentStep);
+          indicator.classList.toggle('is-complete', indicatorIndex < currentStep);
+          if (indicatorIndex === currentStep) indicator.setAttribute('aria-current', 'step');
+          else indicator.removeAttribute('aria-current');
+        });
+        previousButton.hidden = currentStep === 0;
+        nextButton.hidden = currentStep === panels.length - 1;
+        submitButton.hidden = currentStep !== panels.length - 1;
+        if (currentStep === panels.length - 1) {
+          updateVehicleFields();
+          updatePreviewButton();
+        }
+      }
+
+      function updatePreviewButton() {
+        var activeUploads = Array.prototype.slice.call(form.querySelectorAll('.image-input')).filter(function (input) {
+          return !input.disabled && input.files.length > 0;
+        });
+        var requiredFormPhoto = form.querySelector('input[name="formPhoto"]');
+        var requiredReady = requiredFormPhoto.files.length > 0 &&
+          compressedFiles.formPhoto && compressedFiles.formPhoto.length === requiredFormPhoto.files.length;
+        var optionalReady = activeUploads.every(function (input) {
+          return compressedFiles[input.name] && compressedFiles[input.name].length === input.files.length;
+        });
+        submitButton.disabled = !(requiredReady && optionalReady);
+      }
+
+      form.querySelectorAll('[required]').forEach(function (control) {
+        control.addEventListener('invalid', function () {
+          control.setCustomValidity(control.validity.valueMissing
+            ? 'يرجى ملء هذا الحقل'
+            : 'يرجى التحقق من صحة هذا الحقل');
+        });
+        control.addEventListener('input', function () {
+          control.setCustomValidity('');
+        });
+        control.addEventListener('change', function () {
+          control.setCustomValidity('');
+        });
+      });
+
+      nextButton.addEventListener('click', function () {
+        var controls = panels[currentStep].querySelectorAll('input, select, textarea');
+        for (var index = 0; index < controls.length; index += 1) {
+          if (!controls[index].disabled && !controls[index].checkValidity()) {
+            controls[index].reportValidity();
+            controls[index].focus();
+            return;
+          }
+        }
+        showStep(currentStep + 1);
+      });
+
+      previousButton.addEventListener('click', function () {
+        showStep(currentStep - 1);
+      });
+
+      form.querySelectorAll('select[name="sector"]').forEach(function (select) {
+        select.addEventListener('change', updateVehicleFields);
+      });
+
+      function compressImage(file) {
+        return new Promise(function (resolve, reject) {
+          var objectUrl = URL.createObjectURL(file);
+          var image = new Image();
+          image.onload = function () {
+            var maxSide = 1800;
+            var scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+            var canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+            canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+            var context = canvas.getContext('2d');
+            if (!context) {
+              URL.revokeObjectURL(objectUrl);
+              reject(new Error('Canvas unavailable'));
+              return;
+            }
+            context.fillStyle = '#fff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(function (blob) {
+              URL.revokeObjectURL(objectUrl);
+              if (!blob) {
+                reject(new Error('Image compression failed'));
+                return;
+              }
+              var baseName = file.name.replace(/\.[^.]+$/, '') || 'image';
+              resolve(new File([blob], baseName + '.jpg', { type: 'image/jpeg', lastModified: Date.now() }));
+            }, 'image/jpeg', 0.78);
+          };
+          image.onerror = function () {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('Image decoding failed'));
+          };
+          image.src = objectUrl;
+        });
+      }
+
+      function formatSize(bytes) {
+        return bytes >= 1024 * 1024
+          ? (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+          : Math.max(1, Math.round(bytes / 1024)) + ' KB';
+      }
+
+      function activeControl(name) {
+        return Array.prototype.slice.call(form.querySelectorAll('[name="' + name + '"]')).find(function (control) {
+          return !control.disabled;
+        });
+      }
+
+      function controlValue(name) {
+        var control = activeControl(name);
+        return control ? control.value.trim() : '';
+      }
+
+      function selectedText(name) {
+        var control = activeControl(name);
+        return control && control.selectedIndex >= 0 ? control.options[control.selectedIndex].text : '';
+      }
+
+      function collectReceipt() {
+        var now = new Date();
+        var rows = [
+          { label: 'نوع المعاملة', value: mode === 'complaint' ? 'شكوى' : 'طلب' },
+          { label: 'تاريخ الإرسال (حسب ساعة الجهاز)', value: new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', calendar: 'gregory', numberingSystem: 'latn' }).format(now) },
+          { label: 'المحافظة', value: controlValue('governorate') },
+          { label: 'الاسم الثلاثي واللقب', value: controlValue('fullName') },
+          { label: 'رقم الهاتف (واتساب)', value: controlValue('phone') },
+          { label: mode === 'complaint' ? 'فئة المركبة المتضررة' : 'فئة المركبة أو الطلب الشخصي', value: selectedText('sector') },
+          { label: mode === 'complaint' ? 'موضوع الشكوى' : 'موضوع الطلب', value: selectedText('requestCategory') }
+        ];
+
+        if (!vehicleFields.hidden) {
+          rows.push({ label: 'رقم اللوحة', value: controlValue('plateNumber') || '—' });
+          rows.push({ label: 'محافظة اللوحة', value: selectedText('plateGovernorate') });
+        }
+        if (mode === 'complaint') {
+          var incidentPlace = controlValue('incidentPlace');
+          var incidentDate = controlValue('incidentDate');
+          if (incidentPlace) rows.push({ label: 'مكان الحادثة أو المشكلة', value: incidentPlace });
+          if (incidentDate) rows.push({ label: 'تاريخ الحادثة', value: incidentDate });
+        }
+        rows.push({ label: mode === 'complaint' ? 'تفاصيل الشكوى' : 'نص الطلب', value: controlValue('requestDetails') });
+
+        rows.forEach(function (row) {
+          row.label = window.siteTranslate ? window.siteTranslate(row.label) : row.label;
+        });
+        return {
+          number: controlValue('formNumber'),
+          title: window.siteTranslate
+            ? window.siteTranslate(mode === 'complaint' ? 'معاينة الشكوى' : 'معاينة الطلب')
+            : mode === 'complaint' ? 'معاينة الشكوى' : 'معاينة الطلب',
+          rows: rows
+        };
+      }
+
+      function showReceipt() {
+        receiptData = collectReceipt();
+        chip.textContent = 'معاينة محلية';
+        title.textContent = mode === 'complaint' ? 'معاينة الشكوى' : 'معاينة الطلب';
+        intro.textContent = 'تاريخ إعداد المعاينة حسب ساعة جهازك.';
+        document.title = (mode === 'complaint' ? 'معاينة شكوى' : 'معاينة طلب') + ' | اتحاد نقابة العاملين بالنقل والسياحة وخدماتها في العراق';
+        receiptNumber.textContent = receiptData.number;
+        receiptRows.textContent = '';
+        receiptData.rows.forEach(function (row) {
+          var wrapper = document.createElement('div');
+          wrapper.className = 'receipt-row';
+          var label = document.createElement('dt');
+          label.textContent = row.label;
+          var value = document.createElement('dd');
+          value.textContent = row.value;
+          wrapper.appendChild(label);
+          wrapper.appendChild(value);
+          receiptRows.appendChild(wrapper);
+        });
+        form.hidden = true;
+        receiptCard.hidden = false;
+        receiptCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      submitButton.addEventListener('click', function () {
+        var controls = panels[currentStep].querySelectorAll('input, select, textarea');
+        for (var index = 0; index < controls.length; index += 1) {
+          if (!controls[index].disabled && !controls[index].checkValidity()) {
+            controls[index].reportValidity();
+            controls[index].focus();
+            return;
+          }
+        }
+        if (!submitButton.disabled) showReceipt();
+      });
+
+      editRequestButton.addEventListener('click', function () {
+        receiptCard.hidden = true;
+        form.hidden = false;
+        chip.textContent = mode === 'complaint' ? 'بوابة الشكاوى' : 'بوابة الطلبات';
+        title.textContent = mode === 'complaint' ? 'تقديم شكوى' : 'تقديم طلب';
+        intro.textContent = mode === 'complaint'
+          ? 'أكمل الخطوات التالية لتوثيق الشكوى'
+          : 'أكمل الخطوات التالية لتجهيز معاملتك';
+        document.title = (mode === 'complaint' ? 'استمارة شكوى' : 'استمارة طلب') + ' | اتحاد نقابة العاملين بالنقل والسياحة وخدماتها في العراق';
+        receiptStatus.textContent = '';
+        showStep(panels.length - 1);
+        panels[currentStep].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      function wrapReceiptText(context, text, maxWidth) {
+        var words = String(text).replace(/\s+/g, ' ').split(' ');
+        var lines = [];
+        var line = '';
+        words.forEach(function (word) {
+          var candidate = line ? line + ' ' + word : word;
+          if (line && context.measureText(candidate).width > maxWidth) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = candidate;
+          }
+        });
+        if (line) lines.push(line);
+        return lines.length ? lines : ['—'];
+      }
+
+      function createReceiptImage(data) {
+        return new Promise(function (resolve, reject) {
+          var logo = document.getElementById('receipt-logo');
+          if (!logo.complete || !logo.naturalWidth) {
+            reject(new Error('Receipt logo is unavailable'));
+            return;
+          }
+          var canvas = document.createElement('canvas');
+          var width = 1240;
+          var height = 1754;
+          var padding = 56;
+          var logoWidth = 150;
+          var logoHeight = logoWidth * logo.naturalHeight / logo.naturalWidth;
+          var numberBoxWidth = 390;
+          var numberBoxHeight = 118;
+          var topRowHeight = Math.max(logoHeight, numberBoxHeight);
+          var context = canvas.getContext('2d');
+          if (!context) {
+            reject(new Error('Canvas unavailable'));
+            return;
+          }
+
+          context.direction = 'rtl';
+          context.textAlign = 'right';
+          context.font = 'bold 30px Tajawal, Arial, sans-serif';
+          var unionName = 'اتحاد نقابات العاملين في النقل والسياحة وخدماتها في العراق';
+          if (window.siteTranslate) unionName = window.siteTranslate(unionName);
+          var unionLines = wrapReceiptText(context, unionName, width - padding * 2);
+          var rowLayouts = data.rows.map(function (row) {
+            context.font = 'bold 28px Tajawal, Arial, sans-serif';
+            var labelLines = wrapReceiptText(context, row.label, width - padding * 2 - 36);
+            context.font = '36px Tajawal, Arial, sans-serif';
+            var valueLines = wrapReceiptText(context, row.value, width - padding * 2 - 36);
+            var rowHeight = 24 + labelLines.length * 34 + 6 + valueLines.length * 42;
+            return { labelLines: labelLines, valueLines: valueLines, height: rowHeight };
+          });
+          var headerHeight = padding + 8 + topRowHeight + 18 + unionLines.length * 38 + 22 + 62;
+          var rowsHeight = rowLayouts.reduce(function (total, layout) { return total + layout.height + 8; }, 0);
+          var footerHeight = 56;
+          var rowScale = Math.min(1, (height - padding - footerHeight - headerHeight) / rowsHeight);
+          rowLayouts.forEach(function (layout) {
+            layout.height *= rowScale;
+          });
+          canvas.width = width;
+          canvas.height = height;
+          context = canvas.getContext('2d');
+          context.direction = document.documentElement.dir === 'ltr' ? 'ltr' : 'rtl';
+          context.textAlign = 'right';
+          context.textBaseline = 'top';
+          context.fillStyle = '#fff';
+          context.fillRect(0, 0, width, height);
+          context.strokeStyle = '#aeb0b3';
+          context.lineWidth = 2;
+          context.strokeRect(24, 24, width - 48, height - 48);
+          context.fillStyle = '#ffc400';
+          context.fillRect(24, 24, width - 48, 14);
+
+          var y = padding + 8;
+          context.drawImage(logo, (width - logoWidth) / 2, y, logoWidth, logoHeight);
+          var numberBoxY = y + (topRowHeight - numberBoxHeight) / 2;
+          context.fillStyle = '#fff4bf';
+          context.fillRect(padding, numberBoxY, numberBoxWidth, numberBoxHeight);
+          context.fillStyle = '#5c4700';
+          context.textAlign = 'right';
+          context.font = 'bold 26px Tajawal, Arial, sans-serif';
+          context.fillText(window.siteTranslate ? window.siteTranslate('رقم الطلب') : 'رقم الطلب', padding + numberBoxWidth - 18, numberBoxY + 12);
+          context.fillStyle = '#1c1a14';
+          context.font = 'bold 56px Tajawal, Arial, sans-serif';
+          context.fillText(data.number, padding + numberBoxWidth - 18, numberBoxY + 52);
+
+          y += topRowHeight + 18;
+          context.fillStyle = '#1c1a14';
+          context.textAlign = 'center';
+          context.font = 'bold 30px Tajawal, Arial, sans-serif';
+          unionLines.forEach(function (line) {
+            context.fillText(line, width / 2, y);
+            y += 38;
+          });
+          y += 22;
+          context.font = 'bold 44px Tajawal, Arial, sans-serif';
+          context.fillText(data.title, width / 2, y);
+          y += 62;
+
+          data.rows.forEach(function (row, rowIndex) {
+            var layout = rowLayouts[rowIndex];
+            var lineScale = rowScale;
+            context.textAlign = 'right';
+            context.fillStyle = '#fbfaf7';
+            context.fillRect(padding, y, width - padding * 2, layout.height);
+            context.strokeStyle = '#e4e1d5';
+            context.lineWidth = 2;
+            context.strokeRect(padding, y, width - padding * 2, layout.height);
+            y += 12 * lineScale;
+            context.fillStyle = '#5d5a4c';
+            context.font = 'bold ' + (28 * lineScale) + 'px Tajawal, Arial, sans-serif';
+            layout.labelLines.forEach(function (line) {
+              context.fillText(line, width - padding - 18 * lineScale, y);
+              y += 34 * lineScale;
+            });
+            y += 6 * lineScale;
+            context.fillStyle = '#1c1a14';
+            context.font = (36 * lineScale) + 'px Tajawal, Arial, sans-serif';
+            layout.valueLines.forEach(function (line) {
+              context.fillText(line, width - padding - 18 * lineScale, y);
+              y += 42 * lineScale;
+            });
+            y += 20 * lineScale;
+          });
+
+          context.fillStyle = '#5d5a4c';
+          context.textAlign = 'center';
+          context.font = 'bold 26px Tajawal, Arial, sans-serif';
+          var retentionText = 'يرجى الاحتفاظ بهذه الصورة للمراجعة بها';
+          if (window.siteTranslate) retentionText = window.siteTranslate(retentionText);
+          context.fillText(retentionText, width / 2, height - padding - 38);
+
+          canvas.toBlob(function (blob) {
+            if (blob) resolve(blob);
+            else reject(new Error('Receipt image generation failed'));
+          }, 'image/png');
+        });
+      }
+
+      function downloadReceipt(blob, fileName) {
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.hidden = true;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      }
+
+      saveReceiptButton.addEventListener('click', function () {
+        if (!receiptData) return;
+        saveReceiptButton.disabled = true;
+        receiptStatus.textContent = 'جارٍ تجهيز صورة المعاينة...';
+        var filePrefix = document.documentElement.lang === 'ckb-Arab-IQ'
+          ? 'پێشبینین-'
+          : document.documentElement.dir === 'ltr' ? 'preview-' : 'معاينة-';
+        var fileName = filePrefix + receiptData.number + '.png';
+        createReceiptImage(receiptData).then(function (blob) {
+          var imageFile = new File([blob], fileName, { type: 'image/png' });
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+            return navigator.share({ files: [imageFile], title: receiptData.title }).then(function () {
+              receiptStatus.textContent = 'تمت مشاركة صورة المعاينة. يمكنك اختيار حفظ الصورة من خيارات المشاركة.';
+            });
+          }
+          downloadReceipt(blob, fileName);
+        }).catch(function (error) {
+          if (error.name === 'AbortError') {
+            receiptStatus.textContent = 'تم إلغاء حفظ الصورة.';
+          } else {
+            console.error('Receipt image save failed', error);
+            receiptStatus.textContent = 'تعذر حفظ الصورة. حاول مرة أخرى.';
+          }
+        }).then(function () {
+          saveReceiptButton.disabled = false;
+        });
+      });
+
+      form.querySelectorAll('.image-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+          var selectedFiles = Array.prototype.slice.call(input.files);
+          var status = input.parentElement.querySelector('.file-status');
+          var token = (compressionTokens[input.name] || 0) + 1;
+          compressionTokens[input.name] = token;
+          if (!selectedFiles.length) {
+            delete compressedFiles[input.name];
+            status.textContent = '';
+            updatePreviewButton();
+            return;
+          }
+          delete compressedFiles[input.name];
+          status.textContent = 'جارِ تجهيز الصورة وضغطها...';
+          updatePreviewButton();
+          Promise.all(selectedFiles.map(compressImage)).then(function (files) {
+            if (compressionTokens[input.name] !== token) return;
+            compressedFiles[input.name] = files;
+            var originalSize = selectedFiles.reduce(function (total, file) { return total + file.size; }, 0);
+            var compressedSize = files.reduce(function (total, file) { return total + file.size; }, 0);
+            status.textContent = 'تم تجهيز ' + files.length + ' صورة: ' + formatSize(originalSize) + ' ← ' + formatSize(compressedSize);
+            updatePreviewButton();
+          }).catch(function (error) {
+            if (compressionTokens[input.name] !== token) return;
+            delete compressedFiles[input.name];
+            status.textContent = 'تعذر تجهيز الصورة. جرّب صورة بصيغة JPG أو PNG.';
+            console.error('Image preparation failed', error);
+            updatePreviewButton();
+          });
+        });
+      });
+
+      showStep(0);
+    }());
+  </script>
+  <script src="language.js"></script>
+</body>
+</html>
